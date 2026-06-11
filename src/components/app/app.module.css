@@ -21,3 +21,9 @@
   margin: 0 auto;
   overflow: hidden;
 }
+
+.message {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

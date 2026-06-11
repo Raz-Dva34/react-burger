@@ -1,0 +1,14 @@
+.image {
+  width: 480px;
+  height: 240px;
+  object-fit: cover;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(var(--offset-base-size) * 5);
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}

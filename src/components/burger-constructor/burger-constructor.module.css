@@ -5,3 +5,42 @@
   padding-bottom: 20px;
   color: var(--text-primary-color);
 }
+
+.ingredients_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--offset-base-size) * 4);
+}
+
+.ingredients_list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--offset-base-size) * 4);
+  max-height: var(--max-height-container);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style-type: none;
+}
+
+.ingredients_item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--offset-base-size) * 2);
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.order_wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: calc(var(--offset-base-size) * 10);
+}
+
+.price {
+  display: flex;
+  align-items: center;
+}
