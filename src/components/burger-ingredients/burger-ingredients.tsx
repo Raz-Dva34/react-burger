@@ -101,51 +101,46 @@ export const BurgerIngredients = (): React.JSX.Element => {
   }, []);
 
   return (
-    <>
-      <section className={styles.burger_ingredients}>
-        <nav className="mb-10">
-          <ul className={styles.menu}>
-            {TABS.map((tabEl) => (
-              <Tab
-                key={tabEl.value}
-                value={tabEl.value}
-                active={tabItem.value === tabEl.value}
-                onClick={() => handleTabClick(tabEl)}
-              >
-                {tabEl.label}
-              </Tab>
-            ))}
-          </ul>
-        </nav>
-
-        <div
-          ref={containerRef}
-          className={`${styles.ingredients_wrapper} custom-scroll`}
-        >
-          {groupedIngredientsWithTitle.map(({ title, value, items }) => (
-            <div
-              key={value}
-              ref={(el) => {
-                sectionRefs.current[value] = el;
-              }}
+    <section className={styles.burger_ingredients}>
+      <nav className="mb-10">
+        <ul className={styles.menu}>
+          {TABS.map((tabEl) => (
+            <Tab
+              key={tabEl.value}
+              value={tabEl.value}
+              active={tabItem.value === tabEl.value}
+              onClick={() => handleTabClick(tabEl)}
             >
-              <div className="text text_type_main-medium mb-6">{title}</div>
-
-              <div className={styles.burger_tab_content}>
-                {items.map((ingredientItem) => (
-                  <BurgerIngredientCard
-                    key={ingredientItem._id}
-                    ingredient={ingredientItem}
-                    amount={ingredientsCount[ingredientItem._id]}
-                    onClick={() => handleIngredientClick(ingredientItem)}
-                  />
-                ))}
-              </div>
-            </div>
+              {tabEl.label}
+            </Tab>
           ))}
-        </div>
-      </section>
-    </>
+        </ul>
+      </nav>
+
+      <div ref={containerRef} className={`${styles.ingredients_wrapper} custom-scroll`}>
+        {groupedIngredientsWithTitle.map(({ title, value, items }) => (
+          <div
+            key={value}
+            ref={(el) => {
+              sectionRefs.current[value] = el;
+            }}
+          >
+            <div className="text text_type_main-medium mb-6">{title}</div>
+
+            <div className={styles.burger_tab_content}>
+              {items.map((ingredientItem) => (
+                <BurgerIngredientCard
+                  key={ingredientItem._id}
+                  ingredient={ingredientItem}
+                  amount={ingredientsCount[ingredientItem._id]}
+                  onClick={() => handleIngredientClick(ingredientItem)}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 

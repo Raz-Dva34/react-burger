@@ -45,7 +45,7 @@ export const ResetPasswordPage = (): React.JSX.Element => {
   };
 
   if (!isResetPasswordAllowed()) {
-    return <></>;
+    return null;
   }
 
   return (

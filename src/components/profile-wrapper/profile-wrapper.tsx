@@ -3,12 +3,13 @@ import { setAuthStatus } from '@/services/auth/reducer';
 import { useAppDispatch } from '@/services/hooks';
 import { clearTokens, getRefreshToken } from '@/utils/api/auth-tokens';
 import { getErrorMessage } from '@/utils/helpers/getErrorMessage';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import styles from './profile-wrapper.module.css';
 
 export const ProfileWrapper = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [logout] = useLogoutMutation();
   const navigation = [
     {
@@ -22,14 +23,23 @@ export const ProfileWrapper = (): React.JSX.Element => {
     },
   ];
 
+  const finishLogout = (): void => {
+    clearTokens();
+    dispatch(setAuthStatus({ isAuthChecked: true, isLoggedIn: false }));
+    void navigate('/login', { replace: true });
+  };
+
   const handleLogout = (): void => {
     const token = getRefreshToken();
-    if (!token) return;
+    if (!token) {
+      finishLogout();
+      return;
+    }
+
     logout({ token })
       .unwrap()
       .then(() => {
-        clearTokens();
-        dispatch(setAuthStatus({ isAuthChecked: true, isLoggedIn: false }));
+        finishLogout();
       })
       .catch((error: unknown) => {
         console.error('Ошибка при выходе:', getErrorMessage(error, '502'));

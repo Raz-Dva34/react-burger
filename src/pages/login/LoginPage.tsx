@@ -12,7 +12,7 @@ export const LoginPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const from = (location.state as { from?: Location } | null)?.from ?? '/profile';
+  const from = (location.state as { from?: Location } | null)?.from ?? '/';
   const [login] = useLoginMutation();
   const [formState, setFormState] = useState({
     email: '',
