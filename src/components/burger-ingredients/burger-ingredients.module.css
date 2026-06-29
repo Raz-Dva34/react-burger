@@ -14,10 +14,6 @@
   list-style-type: none;
 }
 
-.menu_item {
-  flex: 1;
-}
-
 .ingredients_wrapper {
   display: flex;
   flex-direction: column;
@@ -26,15 +22,9 @@
   overflow-y: auto;
 }
 
-.ingredient_section {
-  scroll-margin-top: calc(var(--offset-base-size) * 4);
-}
-
 .burger_tab_content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: calc(var(--offset-base-size) * 6) calc(var(--offset-base-size) * 8);
-  margin: 0;
   padding: 0 calc(var(--offset-base-size) * 4);
-  list-style-type: none;
 }

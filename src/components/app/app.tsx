@@ -1,49 +1,89 @@
-import { useAppDispatch, useAppSelector } from '@/services/hooks';
-import {
-  selectIngredientsError,
-  selectIngredientsLoading,
-} from '@/services/ingredients/ingredients-slice';
-import { fetchIngredientsThunk } from '@/services/ingredients/ingredients-thunks';
-import { Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect } from 'react';
+import { AuthChecker } from '@/components/auth-checker';
+import { ProfileWrapper } from '@/components/profile-wrapper';
+import { ProtectedRoute } from '@/components/protected-route';
+import { FeedPage } from '@/pages/feed';
+import { ForgotPasswordPage } from '@/pages/forgot-password';
+import { HomePage } from '@/pages/home';
+import { IngredientPage } from '@/pages/ingredient';
+import { LoginPage } from '@/pages/login';
+import { NotFoundPage } from '@/pages/not-found';
+import { ProfilePage } from '@/pages/profile';
+import { ProfileOrderPage } from '@/pages/profile-order';
+import { ProfileOrdersPage } from '@/pages/profile-orders';
+import { RegisterPage } from '@/pages/register';
+import { ResetPasswordPage } from '@/pages/reset-password';
+import { createBrowserRouter, type RouteObject, RouterProvider } from 'react-router-dom';
 
-import { AppHeader } from '@components/app-header/app-header';
-import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
-import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
+import { Layout } from '@components/layout';
 
-import styles from './app.module.css';
+const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    children: [
+      {
+        path: '/',
+        Component: HomePage,
+        children: [
+          {
+            path: 'ingredients/:id',
+            Component: IngredientPage,
+          },
+        ],
+      },
+      {
+        path: 'login',
+        element: <ProtectedRoute anonymous />,
+        children: [{ index: true, Component: LoginPage }],
+      },
+      {
+        path: 'register',
+        element: <ProtectedRoute anonymous />,
+        children: [{ index: true, Component: RegisterPage }],
+      },
+      {
+        path: 'forgot-password',
+        element: <ProtectedRoute anonymous />,
+        children: [{ index: true, Component: ForgotPasswordPage }],
+      },
+      {
+        path: 'reset-password',
+        element: <ProtectedRoute anonymous />,
+        children: [{ index: true, Component: ResetPasswordPage }],
+      },
+      {
+        path: 'profile',
+        element: (
+          <ProtectedRoute>
+            <ProfileWrapper />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, Component: ProfilePage },
+          { path: 'orders', Component: ProfileOrdersPage },
+          { path: 'orders/:id', Component: ProfileOrderPage },
+        ],
+      },
+      {
+        path: 'feed',
+        Component: FeedPage,
+      },
+      {
+        path: '*',
+        Component: NotFoundPage,
+      },
+    ],
+  },
+];
+
+const router = createBrowserRouter(routes);
 
 export const App = (): React.JSX.Element => {
-  const dispatch = useAppDispatch();
-  const isAppLoading = useAppSelector(selectIngredientsLoading);
-  const errorMessage = useAppSelector(selectIngredientsError);
-
-  useEffect(() => {
-    void dispatch(fetchIngredientsThunk());
-  }, [dispatch]);
-
   return (
-    <div className={styles.app}>
-      {isAppLoading && <Preloader />}
-      {!isAppLoading && (
-        <>
-          <AppHeader />
-          <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-            Соберите бургер
-          </h1>
-          {errorMessage ? (
-            <main className={`${styles.main} ${styles.message} pl-5 pr-5`}>
-              <p className="text text_type_main-medium">{errorMessage}</p>
-            </main>
-          ) : (
-            <main className={`${styles.main} pl-5 pr-5`}>
-              <BurgerIngredients />
-              <BurgerConstructor />
-            </main>
-          )}
-        </>
-      )}
-    </div>
+    <>
+      <AuthChecker />
+      <RouterProvider router={router} />
+    </>
   );
 };
 

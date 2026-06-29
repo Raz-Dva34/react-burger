@@ -1,169 +1,152 @@
-import { selectIngredientCounts } from '@/services/burger-constructor/constructor-slice';
+import { getIngredientsCount } from '@/services/burger/selectors';
 import { useAppDispatch, useAppSelector } from '@/services/hooks';
-import {
-  clearIngredientDetails,
-  selectIngredientDetails,
-  setIngredientDetails,
-} from '@/services/ingredient-details/ingredient-details-slice';
-import { selectIngredients } from '@/services/ingredients/ingredients-slice';
+import { useGetIngredientsQuery } from '@/services/ingredient/api';
+import { setSelectedIngredient } from '@/services/selectedIngredient/reducer';
+import { INGREDIENT_MODAL_STORAGE_KEY } from '@/utils/routes';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { BurgerIngredientCard } from '../burger-ingredient-card/burger-ingredient-card';
-import { IngredientDetails } from '../ingredient-details/ingredient-details';
-import { Modal } from '../modal/modal';
+import { BurgerIngredientCard } from '../burger-ingredient-card';
 
 import type {
   GroupedIngredients,
   TabIngredients,
   TabsIngredients,
 } from './burger-ingredients.types';
-import type { TIngredient, TIngredientType } from '@/utils/types';
+import type { TIngredient } from '@/utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-const tabsValues: TabsIngredients = [
-  {
-    value: 'bun',
-    label: 'Булки',
-  },
-  {
-    value: 'sauce',
-    label: 'Соусы',
-  },
-  {
-    value: 'main',
-    label: 'Начинки',
-  },
+const TABS: TabsIngredients = [
+  { value: 'bun', label: 'Булки' },
+  { value: 'sauce', label: 'Соусы' },
+  { value: 'main', label: 'Начинки' },
 ];
 
 export const BurgerIngredients = (): React.JSX.Element => {
+  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
-  const ingredients = useAppSelector(selectIngredients);
-  const ingredientCounts = useAppSelector(selectIngredientCounts);
-  const selectedIngredient = useAppSelector(selectIngredientDetails);
+  const { data: ingredientsItems = [] } = useGetIngredientsQuery();
 
-  const [activeTab, setActiveTab] = useState<TabIngredients>(tabsValues[0]);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const sectionRefs = useRef<Partial<Record<TIngredientType, HTMLElement | null>>>({});
+  const ingredientsCount = useAppSelector(getIngredientsCount);
 
-  const groupedIngredients = useMemo(
-    () =>
-      ingredients.reduce((acc, item) => {
-        const type = item.type;
-        acc[type] = acc[type] ?? [];
-        acc[type]?.push(item);
-        return acc;
-      }, {} as GroupedIngredients),
-    [ingredients]
-  );
+  const groupedIngredients = useMemo(() => {
+    return ingredientsItems.reduce((acc, item) => {
+      const type = item.type;
+      acc[type] = acc[type] ?? [];
+      acc[type].push(item);
+      return acc;
+    }, {} as GroupedIngredients);
+  }, [ingredientsItems]);
 
-  const groupedIngredientsWithTitle = useMemo(
-    () =>
-      tabsValues.map(({ label, value }) => ({
-        title: label,
-        type: value,
-        items: groupedIngredients[value] ?? [],
-      })),
-    [groupedIngredients]
-  );
+  const groupedIngredientsWithTitle = useMemo(() => {
+    return TABS.map(({ label, value }) => ({
+      title: label,
+      value,
+      items: groupedIngredients[value] ?? [],
+    }));
+  }, [ingredientsItems]);
 
-  const handleScroll = useCallback((): void => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+  const [tabItem, setTabItem] = useState<TabIngredients>(TABS[0]);
 
-    const containerTop = container.getBoundingClientRect().top;
-    const closestTab = tabsValues.reduce(
-      (closest, tabItem) => {
-        const section = sectionRefs.current[tabItem.value];
-        if (!section) return closest;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-        const distance = Math.abs(section.getBoundingClientRect().top - containerTop);
-        return distance < closest.distance ? { tabItem, distance } : closest;
-      },
-      {
-        tabItem: activeTab,
-        distance: Number.POSITIVE_INFINITY,
-      }
-    );
+  const handleTabClick = (tab: TabIngredients): void => {
+    setTabItem(tab);
 
-    if (closestTab.tabItem.value !== activeTab.value) setActiveTab(closestTab.tabItem);
-  }, [activeTab]);
-
-  const handleTabClick = useCallback((tabItem: TabIngredients): void => {
-    setActiveTab(tabItem);
-    sectionRefs.current[tabItem.value]?.scrollIntoView({
+    sectionRefs.current[tab.value]?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
+  };
+
+  const handleIngredientClick = (ingredient: TIngredient): void => {
+    dispatch(setSelectedIngredient(ingredient));
+    sessionStorage.setItem(INGREDIENT_MODAL_STORAGE_KEY, ingredient._id);
+    void navigate(`/ingredients/${ingredient._id}`);
+  };
+
+  useEffect(() => {
+    const handleScroll = (): void => {
+      if (!containerRef.current) return;
+
+      const containerTop = containerRef.current.getBoundingClientRect().top;
+
+      let closestTab = TABS[0];
+      let minDistance = Infinity;
+
+      Object.entries(sectionRefs.current).forEach(([value, element]) => {
+        if (!element) return;
+
+        const distance = Math.abs(element.getBoundingClientRect().top - containerTop);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestTab = TABS.find((tab) => tab.value === value) ?? TABS[0];
+        }
+      });
+
+      setTabItem((prev) => (prev.value === closestTab.value ? prev : closestTab));
+    };
+
+    const container = containerRef.current;
+    container?.addEventListener('scroll', handleScroll);
+
+    return (): void => {
+      container?.removeEventListener('scroll', handleScroll);
+    };
   }, []);
-
-  const handleIngredientClick = useCallback(
-    (ingredient: TIngredient): void => {
-      dispatch(setIngredientDetails(ingredient));
-    },
-    [dispatch]
-  );
-
-  const handleCloseIngredientDetails = useCallback((): void => {
-    dispatch(clearIngredientDetails());
-  }, [dispatch]);
 
   return (
     <>
       <section className={styles.burger_ingredients}>
         <nav className="mb-10">
           <ul className={styles.menu}>
-            {tabsValues.map((tabEl) => (
-              <li key={tabEl.value} className={styles.menu_item}>
-                <Tab
-                  value={tabEl.value}
-                  active={activeTab.value === tabEl.value}
-                  onClick={() => handleTabClick(tabEl)}
-                >
-                  {tabEl.label}
-                </Tab>
-              </li>
+            {TABS.map((tabEl) => (
+              <Tab
+                key={tabEl.value}
+                value={tabEl.value}
+                active={tabItem.value === tabEl.value}
+                onClick={() => handleTabClick(tabEl)}
+              >
+                {tabEl.label}
+              </Tab>
             ))}
           </ul>
         </nav>
 
         <div
-          ref={scrollContainerRef}
-          className={styles.ingredients_wrapper + ' custom-scroll'}
-          onScroll={handleScroll}
+          ref={containerRef}
+          className={`${styles.ingredients_wrapper} custom-scroll`}
         >
-          {groupedIngredientsWithTitle.map(({ title, type, items }) => (
-            <section
-              key={type}
-              ref={(element) => {
-                sectionRefs.current[type] = element;
+          {groupedIngredientsWithTitle.map(({ title, value, items }) => (
+            <div
+              key={value}
+              ref={(el) => {
+                sectionRefs.current[value] = el;
               }}
-              className={styles.ingredient_section}
             >
-              <h2 className="text text_type_main-medium mb-6">{title}</h2>
+              <div className="text text_type_main-medium mb-6">{title}</div>
 
-              <ul className={styles.burger_tab_content}>
+              <div className={styles.burger_tab_content}>
                 {items.map((ingredientItem) => (
-                  <li key={ingredientItem._id}>
-                    <BurgerIngredientCard
-                      amount={ingredientCounts[ingredientItem._id] ?? 0}
-                      ingredient={ingredientItem}
-                      onClick={() => handleIngredientClick(ingredientItem)}
-                    />
-                  </li>
+                  <BurgerIngredientCard
+                    key={ingredientItem._id}
+                    ingredient={ingredientItem}
+                    amount={ingredientsCount[ingredientItem._id]}
+                    onClick={() => handleIngredientClick(ingredientItem)}
+                  />
                 ))}
-              </ul>
-            </section>
+              </div>
+            </div>
           ))}
         </div>
       </section>
-
-      {selectedIngredient && (
-        <Modal header="Детали ингредиента" onClose={handleCloseIngredientDetails}>
-          <IngredientDetails ingredient={selectedIngredient} />
-        </Modal>
-      )}
     </>
   );
 };
+
+export default BurgerIngredients;

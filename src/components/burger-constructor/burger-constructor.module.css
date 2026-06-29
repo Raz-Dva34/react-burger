@@ -1,20 +1,20 @@
 .burger_constructor {
   display: flex;
   flex-direction: column;
+  gap: calc(var(--offset-base-size) * 10);
   width: 600px;
-  padding-bottom: 20px;
   color: var(--text-primary-color);
-  transition: opacity 0.2s ease;
 }
 
-.burger_constructor_hover {
-  opacity: 0.78;
+.constructor_preloader {
+  margin: auto;
 }
 
 .ingredients_wrapper {
   display: flex;
   flex-direction: column;
   gap: calc(var(--offset-base-size) * 4);
+  overflow: hidden;
 }
 
 .ingredients_list {
@@ -22,13 +22,10 @@
   flex-direction: column;
   gap: calc(var(--offset-base-size) * 4);
   max-height: var(--max-height-container);
-  margin: 0;
-  padding: 0;
   overflow-y: auto;
-  list-style-type: none;
 }
 
-.ingredients_item {
+.ingredient_item {
   display: flex;
   align-items: center;
   gap: calc(var(--offset-base-size) * 2);
@@ -43,40 +40,4 @@
   justify-content: flex-end;
   align-items: center;
   gap: calc(var(--offset-base-size) * 10);
-}
-
-.price {
-  display: flex;
-  align-items: center;
-}
-
-.placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80px;
-  padding: 0 calc(var(--offset-base-size) * 6);
-  color: var(--text-inactive-color);
-  background-color: var(--background-element);
-}
-
-.placeholder_top {
-  border-radius: 88px 88px 40px 40px;
-}
-
-.placeholder_middle {
-  min-height: 160px;
-  border-radius: 40px;
-}
-
-.placeholder_bottom {
-  border-radius: 40px 40px 88px 88px;
-}
-
-.error {
-  align-self: flex-end;
-  max-width: 360px;
-  margin: 0;
-  color: var(--colors-interface-error);
-  text-align: right;
 }
