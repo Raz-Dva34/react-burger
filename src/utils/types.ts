@@ -15,6 +15,8 @@ export type TIngredient = {
 
 export type TIngredientWithUniqueId = TIngredient & { uniqueId: string };
 
+export type TConstructorIngredient = TIngredient & { id: string };
+
 export type TGetFetchSuccess<T> = {
   success: boolean;
   data: T;

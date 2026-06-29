@@ -59,6 +59,8 @@ export const ProfilePage = (): React.JSX.Element => {
   };
 
   const handleSave = (): void => {
+    if (!isDirty) return;
+
     updateUser({
       name: formState.name,
       email: formState.email,
@@ -80,7 +82,10 @@ export const ProfilePage = (): React.JSX.Element => {
   return (
     <Form
       style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSave();
+      }}
     >
       <Input
         name="name"
@@ -108,7 +113,7 @@ export const ProfilePage = (): React.JSX.Element => {
 
       {isDirty && (
         <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          <Button htmlType="button" type="primary" size="medium" onClick={handleSave}>
+          <Button htmlType="submit" type="primary" size="medium">
             Сохранить
           </Button>
           <Button

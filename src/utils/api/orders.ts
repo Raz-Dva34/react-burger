@@ -1,7 +1,14 @@
-import { API_BASE_URL } from '../constants';
 import { getErrorMessage } from '../getErrorMessage';
 
-import type { TOrderResponse } from '../types';
+import { API_BASE_URL } from '.';
+
+type TOrderResponse = {
+  name: string;
+  order: {
+    number: number;
+  };
+  success: boolean;
+};
 
 export const createOrder = async (ingredients: string[]): Promise<TOrderResponse> => {
   try {

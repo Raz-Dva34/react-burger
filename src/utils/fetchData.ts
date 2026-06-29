@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './constants';
+import { API_BASE_URL } from './api';
 import { getErrorMessage } from './getErrorMessage';
 
 type ApiResponse<T = unknown> = {
