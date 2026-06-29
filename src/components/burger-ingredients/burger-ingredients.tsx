@@ -1,3 +1,11 @@
+import { selectIngredientCounts } from '@/services/burger-constructor/constructor-slice';
+import { useAppDispatch, useAppSelector } from '@/services/hooks';
+import {
+  clearIngredientDetails,
+  selectIngredientDetails,
+  setIngredientDetails,
+} from '@/services/ingredient-details/ingredient-details-slice';
+import { selectIngredients } from '@/services/ingredients/ingredients-slice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -14,11 +22,6 @@ import type { TIngredient, TIngredientType } from '@/utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-export type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-  ingredientCounts?: Record<string, number>;
-};
-
 const tabsValues: TabsIngredients = [
   {
     value: 'bun',
@@ -34,12 +37,14 @@ const tabsValues: TabsIngredients = [
   },
 ];
 
-export const BurgerIngredients = ({
-  ingredients,
-  ingredientCounts = {},
-}: TBurgerIngredientsProps): React.JSX.Element => {
+export const BurgerIngredients = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const ingredients = useAppSelector(selectIngredients);
+  const ingredientCounts = useAppSelector(selectIngredientCounts);
+  const selectedIngredient = useAppSelector(selectIngredientDetails);
+
   const [activeTab, setActiveTab] = useState<TabIngredients>(tabsValues[0]);
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = useRef<Partial<Record<TIngredientType, HTMLElement | null>>>({});
 
   const groupedIngredients = useMemo(
@@ -47,7 +52,7 @@ export const BurgerIngredients = ({
       ingredients.reduce((acc, item) => {
         const type = item.type;
         acc[type] = acc[type] ?? [];
-        acc[type].push(item);
+        acc[type]?.push(item);
         return acc;
       }, {} as GroupedIngredients),
     [ingredients]
@@ -63,6 +68,28 @@ export const BurgerIngredients = ({
     [groupedIngredients]
   );
 
+  const handleScroll = useCallback((): void => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const containerTop = container.getBoundingClientRect().top;
+    const closestTab = tabsValues.reduce(
+      (closest, tabItem) => {
+        const section = sectionRefs.current[tabItem.value];
+        if (!section) return closest;
+
+        const distance = Math.abs(section.getBoundingClientRect().top - containerTop);
+        return distance < closest.distance ? { tabItem, distance } : closest;
+      },
+      {
+        tabItem: activeTab,
+        distance: Number.POSITIVE_INFINITY,
+      }
+    );
+
+    if (closestTab.tabItem.value !== activeTab.value) setActiveTab(closestTab.tabItem);
+  }, [activeTab]);
+
   const handleTabClick = useCallback((tabItem: TabIngredients): void => {
     setActiveTab(tabItem);
     sectionRefs.current[tabItem.value]?.scrollIntoView({
@@ -71,13 +98,16 @@ export const BurgerIngredients = ({
     });
   }, []);
 
-  const handleIngredientClick = useCallback((ingredient: TIngredient): void => {
-    setSelectedIngredient(ingredient);
-  }, []);
+  const handleIngredientClick = useCallback(
+    (ingredient: TIngredient): void => {
+      dispatch(setIngredientDetails(ingredient));
+    },
+    [dispatch]
+  );
 
   const handleCloseIngredientDetails = useCallback((): void => {
-    setSelectedIngredient(null);
-  }, []);
+    dispatch(clearIngredientDetails());
+  }, [dispatch]);
 
   return (
     <>
@@ -98,7 +128,11 @@ export const BurgerIngredients = ({
           </ul>
         </nav>
 
-        <div className={styles.ingredients_wrapper + ' custom-scroll'}>
+        <div
+          ref={scrollContainerRef}
+          className={styles.ingredients_wrapper + ' custom-scroll'}
+          onScroll={handleScroll}
+        >
           {groupedIngredientsWithTitle.map(({ title, type, items }) => (
             <section
               key={type}
