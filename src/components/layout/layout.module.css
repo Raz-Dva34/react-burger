@@ -1,0 +1,15 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 89px);
+  color: var(--text-primary-color);
+  background-color: var(--background-alt);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 1240px;
+  height: 100%;
+  margin: 0 auto;
+}

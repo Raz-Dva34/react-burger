@@ -1,9 +1,7 @@
-export type TIngredientType = 'bun' | 'main' | 'sauce';
-
 export type TIngredient = {
   _id: string;
   name: string;
-  type: TIngredientType;
+  type: string;
   proteins: number;
   fat: number;
   carbohydrates: number;
@@ -15,14 +13,11 @@ export type TIngredient = {
   __v: number;
 };
 
-export type TConstructorIngredient = TIngredient & {
-  id: string;
-};
+export type TIngredientWithUniqueId = TIngredient & { uniqueId: string };
 
-export type TOrderResponse = {
-  name: string;
-  order: {
-    number: number;
-  };
+export type TConstructorIngredient = TIngredient & { id: string };
+
+export type TGetFetchSuccess<T> = {
   success: boolean;
+  data: T;
 };

@@ -1,10 +1,10 @@
-import type { TIngredient, TIngredientType } from '@/utils/types';
+import type { TIngredient } from '@/utils/types';
 
 export type TabIngredients = {
   label: string;
-  value: TIngredientType;
+  value: string;
 };
 
-export type GroupedIngredients = Partial<Record<TIngredientType, TIngredient[]>>;
+export type GroupedIngredients = Record<string, TIngredient[]>;
 
 export type TabsIngredients = TabIngredients[];

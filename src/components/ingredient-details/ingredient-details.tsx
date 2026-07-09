@@ -1,22 +1,21 @@
-import type { TIngredient } from '@/utils/types';
+import { useAppSelector } from '@/services/hooks';
+import { getSelectedIngredient } from '@/services/selectedIngredient/selectors';
+
+import type React from 'react';
 
 import styles from './ingredient-details.module.css';
 
-type IngredientDetailsProps = {
-  ingredient: TIngredient;
-};
-
-export const IngredientDetails = ({
-  ingredient,
-}: IngredientDetailsProps): React.JSX.Element => {
-  const { name, calories, proteins, carbohydrates, fat, image } = ingredient;
+export const IngredientDetails = (): React.JSX.Element => {
+  const selectedIngredient = useAppSelector(getSelectedIngredient);
+  if (!selectedIngredient) return <div>Элемент не выбран</div>;
+  const { name, calories, proteins, carbohydrates, fat, image } = selectedIngredient;
 
   const energyValueList: {
     label: string;
     value: number;
   }[] = [
     {
-      label: 'Калории, ккал',
+      label: 'Калории,ккал',
       value: calories,
     },
     {
@@ -39,14 +38,16 @@ export const IngredientDetails = ({
 
       <div className="text text_type_main-medium mb-8">{name}</div>
 
-      <ul className={styles.list}>
-        {energyValueList.map(({ label, value }) => (
-          <li key={label}>
+      <div className={styles.list}>
+        {energyValueList.map(({ label, value }, index) => (
+          <div key={index + label}>
             <div className="text text_type_main-default">{label}</div>
             <div className="text text_type_digits-default">{value}</div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
+
+export default IngredientDetails;
