@@ -36,3 +36,7 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+
+## TypeScript
+
+Проект изначально реализован на TypeScript.
