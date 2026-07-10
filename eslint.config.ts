@@ -16,6 +16,7 @@ export default defineConfig(
     ignores: [
       '*.config.*',
       '**/*.d.ts',
+      '**/*.module.d.css.ts',
       'dist',
       'node_modules',
       'package*.json',

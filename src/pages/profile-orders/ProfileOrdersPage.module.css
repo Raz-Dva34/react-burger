@@ -1,0 +1,6 @@
+.page {
+  flex: 1;
+  min-width: 0;
+  max-width: 860px;
+  height: 100%;
+}

@@ -1,0 +1,30 @@
+.stats {
+  width: 580px;
+}
+
+.status_board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--offset-base-size) * 9);
+}
+
+.columns {
+  display: flex;
+  gap: calc(var(--offset-base-size) * 6);
+}
+
+.column {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.done {
+  color: var(--colors-interface-success);
+}
+
+.total {
+  text-shadow:
+    0 0 16px rgb(51 51 255 / 25%),
+    0 0 8px rgb(51 51 255 / 25%);
+}

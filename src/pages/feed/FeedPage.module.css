@@ -1,0 +1,14 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: calc(var(--offset-base-size) * 10);
+  overflow: hidden;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 600px 1fr;
+  gap: calc(var(--offset-base-size) * 15);
+  min-height: 0;
+}
