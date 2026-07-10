@@ -2,6 +2,7 @@ import { AuthChecker } from '@/components/auth-checker';
 import { ProfileWrapper } from '@/components/profile-wrapper';
 import { ProtectedRoute } from '@/components/protected-route';
 import { FeedPage } from '@/pages/feed';
+import { FeedOrderPage } from '@/pages/feed-order';
 import { ForgotPasswordPage } from '@/pages/forgot-password';
 import { HomePage } from '@/pages/home';
 import { IngredientPage } from '@/pages/ingredient';
@@ -60,13 +61,17 @@ const routes: RouteObject[] = [
         ),
         children: [
           { index: true, Component: ProfilePage },
-          { path: 'orders', Component: ProfileOrdersPage },
-          { path: 'orders/:id', Component: ProfileOrderPage },
+          {
+            path: 'orders',
+            Component: ProfileOrdersPage,
+            children: [{ path: ':id', Component: ProfileOrderPage }],
+          },
         ],
       },
       {
         path: 'feed',
         Component: FeedPage,
+        children: [{ path: ':id', Component: FeedOrderPage }],
       },
       {
         path: '*',

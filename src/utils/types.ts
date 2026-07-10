@@ -21,3 +21,27 @@ export type TGetFetchSuccess<T> = {
   success: boolean;
   data: T;
 };
+
+export type TOrderStatus = 'created' | 'pending' | 'done';
+
+export type TOrder = {
+  _id: string;
+  ingredients: string[];
+  status: TOrderStatus;
+  number: number;
+  createdAt: string;
+  updatedAt: string;
+  name?: string;
+};
+
+export type TOrdersFeed = {
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  isReady: boolean;
+};
+
+export type TOrderByNumberResponse = {
+  success: boolean;
+  orders: TOrder[];
+};
