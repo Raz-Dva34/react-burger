@@ -10,8 +10,10 @@ type OrderDetailsProps = {
 
 export const OrderDetails = ({ currentOrder }: OrderDetailsProps): React.JSX.Element => {
   return (
-    <div className="pb-30">
-      <div className="text text_type_digits-large mb-8">{currentOrder}</div>
+    <div className="pb-30" data-testid="order-details">
+      <div className="text text_type_digits-large mb-8" data-testid="order-number">
+        {currentOrder}
+      </div>
 
       <div className="text text_type_main-medium mb-15">идентификатор заказа</div>
       <CheckMarkIcon type="primary" className={styles.icon_success + ' mb-15'} />

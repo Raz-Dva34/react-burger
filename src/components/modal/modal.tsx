@@ -32,11 +32,19 @@ export const Modal = ({ children, header, onClose }: ModalProps): React.JSX.Elem
     <>
       <ModalOverlay onClick={onClose} />
 
-      <div className={styles.modal}>
+      <div className={styles.modal} data-testid="modal">
         <div className={styles.modal_wrapper + ` ${header ? 'pt-10' : 'pt-30'}`}>
           {header && <h3 className="text text_type_main-large pl-10 pr-10">{header}</h3>}
 
-          <CloseIcon type="primary" onClick={onClose} className={styles.close_button} />
+          <button
+            aria-label="Закрыть"
+            className={styles.close_button}
+            data-testid="modal-close-button"
+            onClick={onClose}
+            type="button"
+          >
+            <CloseIcon type="primary" />
+          </button>
 
           <div className={styles.modal_content}>{children}</div>
         </div>
