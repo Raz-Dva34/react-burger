@@ -13,7 +13,7 @@ import { ProfileOrderPage } from '@/pages/profile-order';
 import { ProfileOrdersPage } from '@/pages/profile-orders';
 import { RegisterPage } from '@/pages/register';
 import { ResetPasswordPage } from '@/pages/reset-password';
-import { createBrowserRouter, type RouteObject, RouterProvider } from 'react-router-dom';
+import { createHashRouter, type RouteObject, RouterProvider } from 'react-router-dom';
 
 import { Layout } from '@components/layout';
 
@@ -81,7 +81,7 @@ const routes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter(routes);
+const router = createHashRouter(routes);
 
 export const App = (): React.JSX.Element => {
   return (
