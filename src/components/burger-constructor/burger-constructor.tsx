@@ -203,7 +203,11 @@ export const BurgerConstructor = (): React.JSX.Element => {
         </div>
       )}
 
-      <section className={styles.burger_constructor} ref={sectionDropRef}>
+      <section
+        className={styles.burger_constructor}
+        data-testid="burger-constructor-drop-target"
+        ref={sectionDropRef}
+      >
         <div className={styles.ingredients_wrapper}>
           {renderBun('top', 'верх')}
 
@@ -221,6 +225,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
           </div>
 
           <Button
+            data-testid="create-order-button"
             htmlType="button"
             onClick={handleOrder}
             size="large"

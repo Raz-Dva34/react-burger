@@ -40,3 +40,7 @@
 ## TypeScript
 
 Проект изначально реализован на TypeScript.
+
+## Деплой
+
+https://raz-dva34.github.io/react-burger/

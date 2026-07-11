@@ -32,7 +32,12 @@ export const BurgerIngredientCard = ({
   const { image, name, price } = ingredient;
 
   return (
-    <div className={styles.card} onClick={onClick} ref={burgerCardRef}>
+    <div
+      className={styles.card}
+      data-testid={`ingredient-card-${ingredient._id}`}
+      onClick={onClick}
+      ref={burgerCardRef}
+    >
       <img src={image} alt={name} className={styles.img} />
 
       <div className={styles.price}>
